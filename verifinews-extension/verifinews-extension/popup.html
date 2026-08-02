@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VerifiNews</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="header">
+    <span class="mark">V</span>
+    <span class="brand">VerifiNews</span>
+  </header>
+
+  <!-- Logged-out state -->
+  <section id="loginView" class="view hidden">
+    <p class="label">Members Desk</p>
+    <h1 class="title">Sign in to analyze</h1>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required autocomplete="email" />
+      <input type="password" id="password" placeholder="Password" required autocomplete="current-password" />
+      <button type="submit" id="loginBtn">Sign In</button>
+      <p id="loginError" class="error hidden"></p>
+    </form>
+  </section>
+
+  <!-- Logged-in state -->
+  <section id="mainView" class="view hidden">
+    <div class="userRow">
+      <span id="userEmail" class="userEmail"></span>
+      <button id="logoutBtn" class="linkBtn">Sign out</button>
+    </div>
+
+    <button id="analyzeBtn" class="primaryBtn">
+      <span id="analyzeLabel">Check This Page</span>
+    </button>
+
+    <button id="pasteToggle" class="linkBtn small">Paste text instead</button>
+    <div id="pasteBox" class="hidden">
+      <textarea id="pasteText" rows="5" placeholder="Paste article text here..."></textarea>
+      <button id="pasteAnalyzeBtn" class="primaryBtn">Analyze Text</button>
+    </div>
+
+    <div id="resultBox" class="hidden">
+      <div id="verdictBadge" class="badge">
+        <span id="verdictLabel"></span>
+        <span id="verdictConfidence"></span>
+      </div>
+      <p id="resultError" class="error hidden"></p>
+    </div>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'DM Sans', sans-serif !important;
+    font-feature-settings: 'kern' !important;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.2px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Newspaper / news-channel landing page helpers
+   --------------------------------------------------------------- */
+
+.font-news {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-news-body {
+  font-family: 'Merriweather', Georgia, serif;
+}
+
+/* global newsprint paper-grain texture — applies to every page site-wide,
+   so individual pages/components don't need the .paper-texture class */
+body {
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* subtle newsprint paper-grain texture, used as an overlay */
+.paper-texture {
+  position: relative;
+}
+.paper-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 3D perspective containers for tilt-effect cards */
+.perspective-container {
+  perspective: 1200px;
+}
+.tilt-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* endless marquee ticker */
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* shimmer sweep used on badges / highlighted plan */
+.shimmer-bg {
+  background-image: linear-gradient(
+    110deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3.5s linear infinite;
+}
+
+/* thin custom scrollbar for the mobile nav drawer, if needed */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+input.defaultCheckbox {
+  color: white;
+}
+
+input.defaultCheckbox::before {
+  content: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.66662 10.115L12.7946 3.98633L13.7379 4.92899L6.66662 12.0003L2.42395 7.75766L3.36662 6.81499L6.66662 10.115Z' fill='white'/%3E%3C/svg%3E%0A");
+  fill: currentColor;
+  opacity: 0;
+  height: 16px;
+  width: 16px;
+  top: 0;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0px);
+}
+
+input.defaultCheckbox::before path {
+  fill: currentColor;
+}
+
+input:checked.defaultCheckbox::before {
+  opacity: 1;
+}

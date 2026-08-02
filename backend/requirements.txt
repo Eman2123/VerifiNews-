@@ -1,0 +1,18 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+pydantic
+pydantic-settings
+alembic
+python-multipart
+requests
+beautifulsoup4
+lxml
+torch
+transformers
+email-validator
+pip install bcrypt==4.0.1

@@ -1,0 +1,23 @@
+# --- Frontend (Next.js) ---
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env*.local
+frontend/tsconfig.tsbuildinfo
+frontend/npm-debug.log*
+
+# --- Backend (Python/FastAPI) ---
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.env
+
+# --- Root-level venv (if venv sits at project root) ---
+.venv/
+venv/
+
+# --- General ---
+.DS_Store
+*.log
