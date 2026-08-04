@@ -3,9 +3,7 @@ from transformers import pipeline
 MODEL_NAME = "jy46604790/Fake-News-Bert-Detect"
 
 # Loaded lazily, once, on first request — not at import time. This keeps
-# `uvicorn --reload` fast on every code change (the model won't re-download
-# or re-load into memory on every reload, only on first /detect call after
-# a fresh process start).
+# cold starts from paying the model-load cost unless /detect is actually hit.
 _classifier = None
 
 
@@ -46,8 +44,6 @@ def _normalize_result(hf_result: dict) -> tuple[str, float]:
 
 def analyze_text(text: str) -> dict:
     classifier = _get_classifier()
-    # This model truncates at 512 tokens anyway; trimming here just keeps
-    # the payload small before it hits the tokenizer.
     result = classifier(text[:2000], truncation=True)[0]
     label, confidence = _normalize_result(result)
     return {"result_label": label, "confidence": confidence}
