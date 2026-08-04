@@ -130,6 +130,35 @@ module.exports = {
           'linear-gradient(112.83deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0) 110.84%)',
         smartHomeDropzone: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='13' ry='13' stroke='%23E0E5F2FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='5' stroke-linecap='square'/%3e%3c/svg%3e")`,
       },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        floatY: {
+          '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+          '50%': { transform: 'translateY(-14px) rotate(2deg)' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(24px)' },
+          '100%': { opacity: '1', transform: 'translateY(0px)' },
+        },
+        pulseDot: {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.4', transform: 'scale(0.8)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+      },
+      animation: {
+        marquee: 'marquee 28s linear infinite',
+        floatY: 'floatY 5s ease-in-out infinite',
+        fadeInUp: 'fadeInUp 0.7s ease-out both',
+        pulseDot: 'pulseDot 1.6s ease-in-out infinite',
+        shimmer: 'shimmer 3.5s linear infinite',
+      },
     },
     screens: {
       sm: '576px',
@@ -415,35 +444,6 @@ module.exports = {
       shadow: {
         100: 'var(--shadow-100)',
         500: 'rgba(112, 144, 176, 0.08)',
-      },
-      keyframes: {
-        marquee: {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
-        floatY: {
-          '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
-          '50%': { transform: 'translateY(-14px) rotate(2deg)' },
-        },
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(24px)' },
-          '100%': { opacity: '1', transform: 'translateY(0px)' },
-        },
-        pulseDot: {
-          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
-          '50%': { opacity: '0.4', transform: 'scale(0.8)' },
-        },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        },
-      },
-      animation: {
-        marquee: 'marquee 28s linear infinite',
-        floatY: 'floatY 5s ease-in-out infinite',
-        fadeInUp: 'fadeInUp 0.7s ease-out both',
-        pulseDot: 'pulseDot 1.6s ease-in-out infinite',
-        shimmer: 'shimmer 3.5s linear infinite',
       },
     },
   },

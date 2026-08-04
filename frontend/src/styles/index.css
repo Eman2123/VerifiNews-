@@ -118,3 +118,43 @@ input.defaultCheckbox::before path {
 input:checked.defaultCheckbox::before {
   opacity: 1;
 }
+
+/* ---------------------------------------------------------------
+   Fallback keyframes for the animations used above.
+   (Safe to keep even if tailwind.config.js already defines these —
+   these plain CSS @keyframes just guarantee the animations always run.)
+   --------------------------------------------------------------- */
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+.animate-pulseDot {
+  animation: pulseDot 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

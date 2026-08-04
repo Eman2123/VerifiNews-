@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VerifiNews — Installation Guide
 
 This is the complete, ready-to-run project — the Horizon template and all
@@ -159,3 +160,7 @@ npm install react@^18.3.1 react-dom@^18.3.1
 
 Once this runs locally end-to-end, see `DEPLOY.md` for taking it live
 (Vercel + Railway/Render + Neon).
+=======
+# VerifiNews-
+Fake News Dection
+>>>>>>> b87e9580bf36822cf7cb72e21bcf62ce0b95413f
