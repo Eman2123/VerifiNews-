@@ -15,4 +15,5 @@ lxml
 torch
 transformers
 email-validator
-pip install bcrypt==4.0.1
+bcrypt==4.0.1
+resend
