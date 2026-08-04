@@ -1,44 +1,53 @@
-import requests
+from transformers import pipeline
 
-from app.core.config import settings
+MODEL_NAME = "jy46604790/Fake-News-Bert-Detect"
 
-# Zero-shot classification via HuggingFace's hosted Inference API — no local
-# model, no torch/transformers, so this stays well under Vercel's serverless
-# function size limit.
-CANDIDATE_LABELS = ["real news", "fake news"]
+# Loaded lazily, once, on first request — not at import time. This keeps
+# `uvicorn --reload` fast on every code change (the model won't re-download
+# or re-load into memory on every reload, only on first /detect call after
+# a fresh process start).
+_classifier = None
 
 
 class DetectionServiceError(Exception):
     pass
 
 
+def _get_classifier():
+    global _classifier
+    if _classifier is None:
+        try:
+            _classifier = pipeline(
+                "text-classification",
+                model=MODEL_NAME,
+                tokenizer=MODEL_NAME,
+            )
+        except Exception as e:
+            raise DetectionServiceError(f"Failed to load local model: {e}")
+    return _classifier
+
+
+def _normalize_result(hf_result: dict) -> tuple[str, float]:
+    """
+    jy46604790/Fake-News-Bert-Detect output looks like:
+    {"label": "LABEL_0", "score": 0.87}   # LABEL_0 = fake, LABEL_1 = real
+    """
+    raw_label = hf_result.get("label")
+    score = hf_result.get("score")
+
+    if raw_label is None or score is None:
+        raise DetectionServiceError(f"Unexpected model output shape: {hf_result}")
+
+    label = "fake" if raw_label == "LABEL_0" else "real"
+    confidence = round(score * 100, 2)
+
+    return label, confidence
+
+
 def analyze_text(text: str) -> dict:
-    if not settings.HF_API_TOKEN or not settings.HF_MODEL_URL:
-        raise DetectionServiceError("HF_API_TOKEN / HF_MODEL_URL not configured")
-
-    try:
-        response = requests.post(
-            settings.HF_MODEL_URL,
-            headers={"Authorization": f"Bearer {settings.HF_API_TOKEN}"},
-            json={
-                "inputs": text[:2000],
-                "parameters": {"candidate_labels": CANDIDATE_LABELS},
-            },
-            timeout=30,
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise DetectionServiceError(f"HF Inference API request failed: {e}")
-
-    data = response.json()
-    labels = data.get("labels")
-    scores = data.get("scores")
-
-    if not labels or not scores:
-        raise DetectionServiceError(f"Unexpected model output shape: {data}")
-
-    top_label = labels[0]
-    confidence = round(scores[0] * 100, 2)
-    label = "fake" if top_label == "fake news" else "real"
-
+    classifier = _get_classifier()
+    # This model truncates at 512 tokens anyway; trimming here just keeps
+    # the payload small before it hits the tokenizer.
+    result = classifier(text[:2000], truncation=True)[0]
+    label, confidence = _normalize_result(result)
     return {"result_label": label, "confidence": confidence}
