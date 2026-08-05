@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     HF_API_TOKEN: str = ""
     HF_MODEL_URL: str = ""
 
-    FRONTEND_ORIGIN: str = "http://localhost:3000"
+    FRONTEND_ORIGIN: str = "http://localhost:3000,https://verifi-news-8ao6.vercel.app"
 
     RESEND_API_KEY: str = ""
     RESEND_FROM_EMAIL: str = "VerifiNews <onboarding@resend.dev>"
