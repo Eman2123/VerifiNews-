@@ -10,6 +10,17 @@ engine = create_engine(
                           # when Neon drops an idle connection
     pool_recycle=300,     # proactively recycle connections every 5 min, before
                           # Neon's own idle timeout kills them
+    connect_args={
+        # Without this, a slow/sleeping/unreachable DB can hang the connection
+        # attempt for a long time. On Vercel that happens at import time on
+        # every cold start, BEFORE the app object and CORS middleware even
+        # exist — so a hung connection times out the whole serverless
+        # function and the browser sees a bare infra error with no CORS
+        # headers, which looks exactly like a CORS misconfiguration even
+        # though the CORS config itself is fine. Failing fast here means the
+        # try/except in main.py can actually catch it and move on.
+        "connect_timeout": 5,
+    },
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -21,4 +32,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.close() 
+        db.close()
