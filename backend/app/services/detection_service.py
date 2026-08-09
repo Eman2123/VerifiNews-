@@ -8,7 +8,7 @@ from app.core.config import settings
 # fits each one.
 CANDIDATE_LABELS = ["fake news", "real news"]
 
-TIMEOUT_SECONDS = 8
+TIMEOUT_SECONDS = 30
 
 
 class DetectionServiceError(Exception):
