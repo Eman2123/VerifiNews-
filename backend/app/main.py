@@ -29,8 +29,15 @@ app = FastAPI(title="VerifiNews API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.frontend_origins,
-    allow_credentials=True,
+    # The app authenticates via a Bearer token in the Authorization header,
+    # not cookies, so allow_credentials isn't needed here. That means we can
+    # safely use a wildcard origin instead of exact-matching FRONTEND_ORIGIN
+    # strings (which was fragile — trailing slashes, stale preview URLs after
+    # a project got recreated, env var scoped to the wrong environment, etc.
+    # all silently broke CORS). If cookie-based auth is added later, this
+    # needs to go back to an explicit allow_origins list + allow_credentials.
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
