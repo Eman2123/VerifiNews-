@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # VerifiNews — Installation Guide
 
 This is the complete, ready-to-run project — the Horizon template and all
