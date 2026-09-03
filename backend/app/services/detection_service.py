@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 from app.core.config import settings
@@ -8,7 +10,8 @@ from app.core.config import settings
 # fits each one.
 CANDIDATE_LABELS = ["fake news", "real news"]
 
-TIMEOUT_SECONDS = 6
+TIMEOUT_SECONDS = 60  # was 6 — bart-large-mnli can take 20-40s to cold-start on the free tier
+MAX_RETRIES = 3
 
 
 class DetectionServiceError(Exception):
@@ -30,28 +33,47 @@ def _call_hf_api(text: str) -> dict:
         "parameters": {"candidate_labels": CANDIDATE_LABELS},
     }
 
-    try:
-        response = requests.post(
-            settings.HF_MODEL_URL,
-            headers=headers,
-            json=payload,
-            timeout=TIMEOUT_SECONDS,
-        )
-    except requests.RequestException as e:
-        raise DetectionServiceError(f"Failed to reach Hugging Face API: {e}")
+    last_error: str | None = None
 
-    # The router can return 503 for a bit while it spins up the model — worth
-    # surfacing that distinctly since it's usually transient.
-    if response.status_code == 503:
-        raise DetectionServiceError(
-            "Model is warming up on Hugging Face, please try again in a few seconds"
-        )
-    if response.status_code != 200:
-        raise DetectionServiceError(
-            f"Hugging Face API error ({response.status_code}): {response.text[:300]}"
-        )
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            response = requests.post(
+                settings.HF_MODEL_URL,
+                headers=headers,
+                json=payload,
+                timeout=TIMEOUT_SECONDS,
+            )
+        except requests.exceptions.Timeout:
+            # Slow response, not a hard failure — worth one more try.
+            last_error = f"Timed out after {TIMEOUT_SECONDS}s"
+            time.sleep(3)
+            continue
+        except requests.RequestException as e:
+            raise DetectionServiceError(f"Failed to reach Hugging Face API: {e}")
 
-    return response.json()
+        # The router returns 503 while it spins the model up (cold start).
+        # It's transient, so wait the time HF tells us and retry instead of
+        # failing immediately.
+        if response.status_code == 503:
+            wait_time = 10
+            try:
+                wait_time = response.json().get("estimated_time", 10)
+            except ValueError:
+                pass
+            last_error = "Model is warming up on Hugging Face"
+            time.sleep(min(wait_time, TIMEOUT_SECONDS))
+            continue
+
+        if response.status_code != 200:
+            raise DetectionServiceError(
+                f"Hugging Face API error ({response.status_code}): {response.text[:300]}"
+            )
+
+        return response.json()
+
+    raise DetectionServiceError(
+        f"Hugging Face API did not respond after {MAX_RETRIES} attempts ({last_error})"
+    )
 
 
 def _normalize_result(hf_result: dict) -> tuple[str, float]:
