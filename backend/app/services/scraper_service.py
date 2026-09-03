@@ -1,11 +1,24 @@
 import requests
 from bs4 import BeautifulSoup
 
+# A fuller, more "real browser" header set. Sites that 403 on a bare
+# User-Agent (common with basic bot-protection) often let a request through
+# once Accept / Accept-Language / Referer / sec-fetch-* are also present.
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-    )
+    ),
+    "Accept": (
+        "text/html,application/xhtml+xml,application/xml;q=0.9,"
+        "image/avif,image/webp,*/*;q=0.8"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.google.com/",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "cross-site",
+    "Upgrade-Insecure-Requests": "1",
 }
 
 
@@ -22,8 +35,17 @@ def extract_text_from_url(url: str, timeout: int = 10) -> str:
     becomes an issue on specific sites.
     """
     try:
-        response = requests.get(url, headers=HEADERS, timeout=timeout)
-        response.raise_for_status()
+        with requests.Session() as session:
+            response = session.get(url, headers=HEADERS, timeout=timeout, allow_redirects=True)
+            response.raise_for_status()
+    except requests.HTTPError as e:
+        status = e.response.status_code if e.response is not None else None
+        if status == 403:
+            raise ScraperError(
+                "This site is blocking automated access (403 Forbidden). "
+                "Try pasting the article text directly instead of the URL."
+            )
+        raise ScraperError(f"Could not fetch URL: {e}")
     except requests.RequestException as e:
         raise ScraperError(f"Could not fetch URL: {e}")
 
