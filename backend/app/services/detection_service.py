@@ -76,16 +76,27 @@ def _call_hf_api(text: str) -> dict:
     )
 
 
-def _normalize_result(hf_result: dict) -> tuple[str, float]:
+def _normalize_result(hf_result) -> tuple[str, float]:
     """
-    Zero-shot-classification response looks like:
+    Zero-shot-classification response normally looks like:
     {
         "sequence": "...",
         "labels": ["fake news", "real news"],
         "scores": [0.87, 0.13]
     }
     labels/scores come back sorted highest-score-first, so index 0 is the winner.
+
+    The router sometimes wraps this in a list instead — [{"sequence": ..., ...}] —
+    so unwrap that case first before treating it as a dict.
     """
+    if isinstance(hf_result, list):
+        if not hf_result:
+            raise DetectionServiceError(f"Empty model output: {hf_result}")
+        hf_result = hf_result[0]
+
+    if not isinstance(hf_result, dict):
+        raise DetectionServiceError(f"Unexpected model output shape: {hf_result}")
+
     labels = hf_result.get("labels")
     scores = hf_result.get("scores")
 
