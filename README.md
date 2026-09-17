@@ -1,39 +1,67 @@
+<div align="center">
+
 # VerifiNews
 
-VerifiNews is an AI-powered news verification platform that analyzes article text and predicts whether the content is **Real or Fake**, along with a confidence score. It also provides authentication, analysis history, reporting, and an admin dashboard for managing users and detection records.
+### AI-Powered News Verification Platform
 
-## Features
+Analyze news articles with AI and get a **Real / Fake** prediction with a confidence score.
 
-- AI-powered fake news detection
-- Real/Fake classification with confidence score
-- User authentication and profiles
-- Detection history
-- Report and flagged-content management
-- Admin dashboard
-- FastAPI backend
-- Next.js frontend
-- PostgreSQL database with Neon
-- Hugging Face inference for the detection model
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](https://huggingface.co/)
+
+</div>
+
+---
+
+## Overview
+
+**VerifiNews** is a full-stack AI news verification platform designed to help users analyze potentially misleading news content. Users can submit article text, receive an AI-generated classification with a confidence score, and keep track of previous analyses.
+
+The platform also includes authentication, user profiles, reporting, detection history, and an admin dashboard for managing users and flagged content.
+
+## Core Features
+
+| Feature | Description |
+|---|---|
+| **AI Detection** | Analyze news content using a Hugging Face inference model |
+| **Real / Fake Classification** | Get a predicted classification with confidence |
+| **Authentication** | Secure signup, login, and user profiles |
+| **Detection History** | Review previously analyzed articles |
+| **Reporting** | Submit and manage flagged content |
+| **Admin Dashboard** | Manage users, detections, and reports |
+| **REST API** | FastAPI-powered backend with interactive API docs |
 
 ## Tech Stack
 
-**Frontend:** Next.js, React, TypeScript
+```text
+Frontend     → Next.js · React · TypeScript
+Backend      → Python · FastAPI
+Database     → PostgreSQL · Neon
+AI/ML        → Hugging Face
+Deployment   → Vercel · Railway/Render · Neon
+```
 
-**Backend:** Python, FastAPI
+## Architecture
 
-**Database:** PostgreSQL, Neon
-
-**AI/ML:** Hugging Face
-
-**Deployment:** Vercel, Railway/Render, Neon
+```mermaid
+flowchart LR
+    U[User] --> F[Next.js Frontend]
+    F --> A[FastAPI Backend]
+    A --> AI[Hugging Face Model]
+    A --> DB[(Neon PostgreSQL)]
+    A --> R[Reports & History]
+    R --> AD[Admin Dashboard]
+```
 
 ## Project Structure
 
 ```text
 VerifiNews/
-├── backend/       # FastAPI backend
-├── frontend/      # Next.js frontend
-├── DEPLOY.md      # Deployment guide
+├── backend/              # FastAPI backend
+├── frontend/             # Next.js frontend
+├── DEPLOY.md             # Deployment guide
 └── README.md
 ```
 
@@ -45,9 +73,9 @@ VerifiNews/
 - PostgreSQL database (Neon recommended)
 - Hugging Face account and API token
 
-## Local Setup
+## Quick Start
 
-### 1. Clone the repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/Eman2123/VerifiNews-.git
@@ -61,13 +89,13 @@ cd backend
 python -m venv venv
 ```
 
-On Windows:
+**Windows:**
 
 ```bash
 venv\Scripts\activate
 ```
 
-On macOS/Linux:
+**macOS/Linux:**
 
 ```bash
 source venv/bin/activate
@@ -79,7 +107,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Create `.env` from `.env.example` and configure:
+Create `.env` from `.env.example`:
 
 ```env
 DATABASE_URL=your_neon_postgresql_url
@@ -95,11 +123,7 @@ Start the API:
 uvicorn app.main:app --reload
 ```
 
-Backend API docs:
-
-```text
-http://localhost:8000/docs
-```
+API docs: `http://localhost:8000/docs`
 
 ### 3. Frontend
 
@@ -110,7 +134,7 @@ cd frontend
 npm install
 ```
 
-Create `.env.local` from `.env.local.example` and make sure the API URL points to the backend:
+Create `.env.local` from `.env.local.example`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -122,17 +146,35 @@ Start the frontend:
 npm run dev
 ```
 
-Open:
-
-```text
-http://localhost:3000
-```
+Open `http://localhost:3000` in your browser.
 
 ## How It Works
 
+```text
+Article Text
+     │
+     ▼
+Next.js Frontend
+     │
+     ▼
+FastAPI Backend
+     │
+     ▼
+Hugging Face Model
+     │
+     ▼
+Real / Fake + Confidence
+     │
+     ▼
+Neon PostgreSQL
+     │
+     ▼
+History / Reports / Admin
+```
+
 1. A user signs in or creates an account.
 2. The user submits news/article text for analysis.
-3. The backend sends the text to the configured Hugging Face model.
+3. The backend sends the content to the configured Hugging Face model.
 4. VerifiNews returns the predicted classification and confidence score.
 5. The result is stored in the user's detection history.
 6. Users can review previous checks and submit reports when needed.
@@ -140,13 +182,13 @@ http://localhost:3000
 
 ## Admin Access
 
-Admin accounts are not created through normal sign-up. After creating an account, an administrator can assign the role through the PostgreSQL database:
+Admin accounts are not created through normal signup. After creating an account, an administrator can assign the role through PostgreSQL:
 
 ```sql
 UPDATE users SET role = 'admin' WHERE email = 'your-email@example.com';
 ```
 
-After changing the role, log out and sign in again to access the admin dashboard.
+Log out and sign in again after changing the role.
 
 ## Troubleshooting
 
@@ -160,8 +202,22 @@ After changing the role, log out and sign in again to access the admin dashboard
 
 ## Deployment
 
-For production deployment, see [`DEPLOY.md`](./DEPLOY.md) for the database, backend, and frontend deployment setup.
+See [`DEPLOY.md`](./DEPLOY.md) for production deployment instructions covering the database, backend, and frontend.
+
+## Project Links
+
+- **Repository:** [Eman2123/VerifiNews-](https://github.com/Eman2123/VerifiNews-)
+- **API Documentation:** `http://localhost:8000/docs` when running locally
+- **Deployment Guide:** [`DEPLOY.md`](./DEPLOY.md)
 
 ## License
 
 This project is intended for educational and project demonstration purposes.
+
+<div align="center">
+
+---
+
+**VerifiNews · AI-powered news verification**
+
+</div>
