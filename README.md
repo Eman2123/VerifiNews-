@@ -1,85 +1,107 @@
-# VerifiNews — Installation Guide
+# VerifiNews
 
-This is the complete, ready-to-run project — the Horizon template and all
-custom VerifiNews code (backend + frontend) are already merged together.
-No copy-pasting files around; just install and run.
+VerifiNews is an AI-powered news verification platform that analyzes article text and predicts whether the content is **Real or Fake**, along with a confidence score. It also provides authentication, analysis history, reporting, and an admin dashboard for managing users and detection records.
 
+## Features
+
+- AI-powered fake news detection
+- Real/Fake classification with confidence score
+- User authentication and profiles
+- Detection history
+- Report and flagged-content management
+- Admin dashboard
+- FastAPI backend
+- Next.js frontend
+- PostgreSQL database with Neon
+- Hugging Face inference for the detection model
+
+## Tech Stack
+
+**Frontend:** Next.js, React, TypeScript
+
+**Backend:** Python, FastAPI
+
+**Database:** PostgreSQL, Neon
+
+**AI/ML:** Hugging Face
+
+**Deployment:** Vercel, Railway/Render, Neon
+
+## Project Structure
+
+```text
+VerifiNews/
+├── backend/       # FastAPI backend
+├── frontend/      # Next.js frontend
+├── DEPLOY.md      # Deployment guide
+└── README.md
 ```
-verifinews/
-├── README.md          ← this file
-├── DEPLOY.md           ← deployment guide (Neon → Railway/Render → Vercel)
-├── backend/            ← FastAPI project
-└── frontend/            ← Next.js project (Horizon template + VerifiNews)
-```
-
----
 
 ## Requirements
 
-| Tool | Version | Why |
-|---|---|---|
-| Python | 3.10 or newer | Backend uses modern type-hint syntax |
-| Node.js | 18.x or newer | Frontend (Next.js 15) |
-| npm | comes with Node | Package manager |
-| PostgreSQL account | — | Use [Neon.tech](https://neon.tech) (free tier, no local install needed) |
-| HuggingFace account | — | Free account at [huggingface.co](https://huggingface.co) for the detection model |
-| Git | any recent version | To push to GitHub for deployment later |
+- Python 3.10+
+- Node.js 18+
+- npm
+- PostgreSQL database (Neon recommended)
+- Hugging Face account and API token
 
-You do **not** need XAMPP, a local Postgres install, or Docker — Neon gives
-you a hosted database with zero local setup.
+## Local Setup
 
----
+### 1. Clone the repository
 
-## 1. Database (Neon.tech)
+```bash
+git clone https://github.com/Eman2123/VerifiNews-.git
+cd VerifiNews-
+```
 
-1. Create a free account at neon.tech
-2. Create a new project
-3. From the dashboard, copy the **connection string** (looks like
-   `postgresql://user:password@host/dbname?sslmode=require`)
-4. Keep this handy for the backend `.env` in the next step
-
----
-
-## 2. Backend Setup
+### 2. Backend
 
 ```bash
 cd backend
 python -m venv venv
+```
 
-# activate the virtual environment
-source venv/bin/activate       # macOS/Linux
-venv\Scripts\activate          # Windows
+On Windows:
 
+```bash
+venv\Scripts\activate
+```
+
+On macOS/Linux:
+
+```bash
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-Copy the example env file and fill in real values:
+Create `.env` from `.env.example` and configure:
 
-```bash
-cp .env.example .env
+```env
+DATABASE_URL=your_neon_postgresql_url
+SECRET_KEY=your_secret_key
+HF_API_TOKEN=your_huggingface_token
+HF_MODEL_URL=your_huggingface_model_url
+FRONTEND_ORIGIN=http://localhost:3000
 ```
 
-Edit `.env`:
-- `DATABASE_URL` → your Neon connection string from step 1
-- `SECRET_KEY` → generate one: `python -c "import secrets; print(secrets.token_hex(32))"`
-- `HF_API_TOKEN` → from huggingface.co → Settings → Access Tokens
-- `HF_MODEL_URL` → `https://api-inference.huggingface.co/models/<model-name>`
-  (search HuggingFace for a "fake news detection" text-classification model)
-- Leave `FRONTEND_ORIGIN` as `http://localhost:3000` for local dev
-
-Run the backend:
+Start the API:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Confirm it's working at **http://localhost:8000/docs** — you should see the
-interactive API docs with `/auth`, `/detect`, `/history`, `/users`,
-`/report`, and `/admin` endpoints listed.
+Backend API docs:
 
----
+```text
+http://localhost:8000/docs
+```
 
-## 3. Frontend Setup
+### 3. Frontend
 
 Open a new terminal:
 
@@ -88,78 +110,58 @@ cd frontend
 npm install
 ```
 
-Copy the example env file:
+Create `.env.local` from `.env.local.example` and make sure the API URL points to the backend:
 
-```bash
-cp .env.local.example .env.local
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-It already points to `http://localhost:8000` for local dev — no changes
-needed unless your backend runs on a different port.
-
-Run the frontend:
+Start the frontend:
 
 ```bash
 npm run dev
 ```
 
-Open **http://localhost:3000** — you should see the VerifiNews landing page
-(newspaper theme).
+Open:
 
----
+```text
+http://localhost:3000
+```
 
-## 4. First-time test run
+## How It Works
 
-1. Click **Sign Up**, create an account → should land on `/dashboard/default`
-2. Paste some article text → **Analyze** → a stamped result card should
-   appear (Real/Fake + confidence)
-3. Check **History** — your check should be listed there
-4. Go to **Profile** — try updating your name
+1. A user signs in or creates an account.
+2. The user submits news/article text for analysis.
+3. The backend sends the text to the configured Hugging Face model.
+4. VerifiNews returns the predicted classification and confidence score.
+5. The result is stored in the user's detection history.
+6. Users can review previous checks and submit reports when needed.
+7. Admins can manage users, detection logs, and flagged reports.
 
-### Making yourself an admin
+## Admin Access
 
-Sign-up never creates admins directly (by design, for security). After
-signing up once, open the **Neon SQL editor** in your browser and run:
+Admin accounts are not created through normal sign-up. After creating an account, an administrator can assign the role through the PostgreSQL database:
 
 ```sql
 UPDATE users SET role = 'admin' WHERE email = 'your-email@example.com';
 ```
 
-Log out and back in — you should now land on `/admin/default` and see the
-full admin panel (Dashboard, Users, Detection Logs, Flagged Reports,
-Profile).
-
----
-
-## Optional: downgrade React from RC to stable
-
-The template ships with React 19 release-candidate. It works fine for
-development, but if you want a stable version before deploying:
-
-```bash
-cd frontend
-npm install react@^18.3.1 react-dom@^18.3.1
-```
-
----
+After changing the role, log out and sign in again to access the admin dashboard.
 
 ## Troubleshooting
 
-| Problem | Fix |
+| Problem | Possible Fix |
 |---|---|
-| `pip install` fails on some package | Make sure you're using Python 3.10+ (`python --version`) |
-| Frontend shows CORS errors in console | Check backend `.env` → `FRONTEND_ORIGIN` matches `http://localhost:3000` exactly |
-| `/detect` takes 20-30 seconds the first time | Normal — HuggingFace "wakes up" a cold model on first call |
-| Sidebar shows no links on `/dashboard` or `/admin` | Make sure `npm install` completed fully and you restarted `npm run dev` after installing |
-| 401 error right after logging in | Check `frontend/.env.local` has the correct `NEXT_PUBLIC_API_URL` and restart `npm run dev` |
+| `pip install` fails | Check that Python 3.10+ is installed |
+| CORS error | Verify `FRONTEND_ORIGIN` matches the frontend URL |
+| First detection is slow | The Hugging Face model may need to wake from a cold start |
+| 401 after login | Check `NEXT_PUBLIC_API_URL` and restart the frontend |
+| Database connection fails | Verify the Neon `DATABASE_URL` and SSL configuration |
 
----
+## Deployment
 
-## Next steps
+For production deployment, see [`DEPLOY.md`](./DEPLOY.md) for the database, backend, and frontend deployment setup.
 
-Once this runs locally end-to-end, see `DEPLOY.md` for taking it live
-(Vercel + Railway/Render + Neon).
-=======
-# VerifiNews-
-Fake News Dection
->>>>>>> b87e9580bf36822cf7cb72e21bcf62ce0b95413f
+## License
+
+This project is intended for educational and project demonstration purposes.
